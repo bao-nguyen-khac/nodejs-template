@@ -1,30 +1,56 @@
-const myDataSource = require("../configs/db.config");
-const UserEntitySchema = require("../entities/user.entity");
+const myDataSource = require('../configs/db.config');
+const UserEntity = require('../entities/user.entity');
 
 class UserController {
+    async new(req, res, next) {
+        try {
+            const user = await myDataSource.getRepository(UserEntity).save({
+                name: req.body.name,
+            });
+            res.status(200).send(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getAll(req, res, next) {
         try {
-            const users = await myDataSource
-                .getRepository(UserEntitySchema)
-                .find();
+            const users = await myDataSource.getRepository(UserEntity).find({
+                relations: {
+                    posts: true,
+                },
+            });
             res.status(200).send(users);
         } catch (error) {
             next(error);
         }
     }
 
-    async get(req, res, next) {
+    async get(userId) {
         try {
-            const results = await myDataSource
-                .getRepository(UserEntitySchema)
+            const user = await myDataSource
+                .getRepository(UserEntity)
                 .findOneBy({
-                    id: req.params.id,
+                    id: userId,
                 });
-            res.status(200).send(results);
+            return user;
         } catch (error) {
             next(error);
         }
     }
+
+    // async get(req, res, next) {
+    //     try {
+    //         const results = await myDataSource
+    //             .getRepository(UserEntity)
+    //             .findOneBy({
+    //                 id: req.params.id,
+    //             });
+    //         res.status(200).send(results);
+    //     } catch (error) {
+    //         next(error);
+    //     }
+    // }
 }
 
 module.exports = new UserController();

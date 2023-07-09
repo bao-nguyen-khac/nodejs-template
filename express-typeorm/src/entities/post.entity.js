@@ -1,24 +1,24 @@
 const { EntitySchema } = require('typeorm');
 
-const User = new EntitySchema({
-    name: 'User',
+const Post = new EntitySchema({
+    name: 'Post',
     columns: {
         id: {
             primary: true,
             type: 'int',
             generated: true,
         },
-        name: {
+        title: {
             type: 'varchar',
         },
     },
     relations: {
-        posts: {
-            type: 'one-to-many',
-            target: 'Post',
-            inverseSide: 'user',
+        user: {
+            type: 'many-to-one',
+            target: 'User',
+            joinColumn: true,
         },
     },
 });
 
-module.exports = User;
+module.exports = Post;
